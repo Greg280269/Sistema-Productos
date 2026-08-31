@@ -1,114 +1,63 @@
 import express from 'express';
 import cors from 'cors';
+import pg from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const { Pool } = pg;
 
 const app = express();
 
 app.disable('x-powered-by');
 
 app.use(cors({
-  origin: 'http://localhost:5173'
+    origin: 'http://localhost:5173'
 }));
 
 app.use(express.json());
 
 const PORT = 3000;
 
-let productos = [
-  {
-    id: 1,
-    nombre: 'Laptop',
-    precio: 2500
-  },
-  {
-    id: 2,
-    nombre: 'Monitor',
-    precio: 800
-  },
-  {
-    id: 3,
-    nombre: 'Teclado',
-    precio: 150
-  }
-];
-
-// GET - Obtener todos
-app.get('/api/productos', (req, res) => {
-  res.json(productos);
+// Conexión a PostgreSQL
+const pool = new Pool({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD
 });
 
-// GET - Obtener uno por ID
-app.get('/api/productos/:id', (req, res) => {
-
-  const id = Number(req.params.id);
-
-  const producto = productos.find(producto => producto.id === id);
-
-  if (!producto) {
-    return res.status(404).json({
-      mensaje: 'Producto no encontrado'
+// Endpoint de prueba
+app.get('/', (req, res) => {
+    res.json({
+        mensaje: 'Backend funcionando'
     });
-  }
-
-  res.json(producto);
 });
 
-// POST - Crear producto
-app.post('/api/productos', (req, res) => {
+// Obtener productos
+app.get('/api/productos', async (req, res) => {
 
-  const { nombre, precio } = req.body;
+    try {
 
-  const nuevoProducto = {
-    id: productos.length + 1,
-    nombre,
-    precio
-  };
+        const result = await pool.query(
+            'SELECT * FROM productos ORDER BY id'
+        );
 
-  productos.push(nuevoProducto);
+        res.json(result.rows);
 
-  res.status(201).json(nuevoProducto);
-});
+    } catch (error) {
 
-// PUT - Actualizar producto
-app.put('/api/productos/:id', (req, res) => {
+        console.error('Error al consultar PostgreSQL:', error);
 
-  const id = Number(req.params.id);
+        res.status(500).json({
+            mensaje: 'Error al consultar la base de datos'
+        });
 
-  const producto = productos.find(producto => producto.id === id);
+    }
 
-  if (!producto) {
-    return res.status(404).json({
-      mensaje: 'Producto no encontrado'
-    });
-  }
-
-  const { nombre, precio } = req.body;
-
-  producto.nombre = nombre;
-  producto.precio = precio;
-
-  res.json(producto);
-});
-
-// DELETE - Eliminar producto
-app.delete('/api/productos/:id', (req, res) => {
-
-  const id = Number(req.params.id);
-
-  const existe = productos.some(producto => producto.id === id);
-
-  if (!existe) {
-    return res.status(404).json({
-      mensaje: 'Producto no encontrado'
-    });
-  }
-
-  productos = productos.filter(producto => producto.id !== id);
-
-  res.json({
-    mensaje: 'Producto eliminado correctamente'
-  });
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
