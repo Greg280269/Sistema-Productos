@@ -6,6 +6,16 @@ import {
   eliminarProducto
 } from '../services/productoService.js';
 
+const validarProducto = (nombre, precio) => {
+  if (typeof nombre !== 'string' || nombre.trim() === '') {
+    return false;
+  }
+
+  const precioNumerico = Number(precio);
+
+  return Number.isFinite(precioNumerico) && precioNumerico > 0;
+};
+
 export const getProductos = async (req, res) => {
 
   try {
@@ -53,18 +63,19 @@ export const getProducto = async (req, res) => {
 };
 
 export const postProducto = async (req, res) => {
-
+ 
   try {
-
+ 
     const { nombre, precio } = req.body;
+    const nombreNormalizado = typeof nombre === 'string' ? nombre.trim() : '';
 
-    if (!nombre || precio === undefined) {
+    if (!validarProducto(nombreNormalizado, precio)) {
       return res.status(400).json({
-        mensaje: 'Nombre y precio son obligatorios'
+        mensaje: 'Nombre y precio válido son obligatorios'
       });
     }
 
-    const producto = await crearProducto(nombre, precio);
+    const producto = await crearProducto(nombreNormalizado, Number(precio));
 
     res.status(201).json(producto);
 
@@ -80,22 +91,23 @@ export const postProducto = async (req, res) => {
 };
 
 export const putProducto = async (req, res) => {
-
+ 
   try {
-
+ 
     const id = Number(req.params.id);
     const { nombre, precio } = req.body;
+    const nombreNormalizado = typeof nombre === 'string' ? nombre.trim() : '';
 
-    if (!nombre || precio === undefined) {
+    if (!validarProducto(nombreNormalizado, precio)) {
       return res.status(400).json({
-        mensaje: 'Nombre y precio son obligatorios'
+        mensaje: 'Nombre y precio válido son obligatorios'
       });
     }
 
     const producto = await actualizarProducto(
       id,
-      nombre,
-      precio
+      nombreNormalizado,
+      Number(precio)
     );
 
     if (!producto) {
