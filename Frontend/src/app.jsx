@@ -32,9 +32,12 @@ function App() {
 
   // Crear producto
   const crearProducto = async () => {
+ 
+    const nombreNormalizado = nombre.trim();
+    const precioNumerico = Number(precio);
 
-    if (!nombre || !precio) {
-      alert('Completa todos los campos');
+    if (!nombreNormalizado || !Number.isFinite(precioNumerico) || precioNumerico <= 0) {
+      alert('Completa todos los campos con un precio válido');
       return;
     }
 
@@ -46,14 +49,18 @@ function App() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          nombre: nombre,
-          precio: Number(precio)
+          nombre: nombreNormalizado,
+          precio: precioNumerico
         })
       });
 
+      if (!response.ok) {
+        throw new Error('No se pudo crear el producto');
+      }
+
       const nuevoProducto = await response.json();
 
-      setProductos([...productos, nuevoProducto]);
+      setProductos((prevProductos) => [...prevProductos, nuevoProducto]);
 
       setNombre('');
       setPrecio('');
@@ -61,6 +68,7 @@ function App() {
     } catch (error) {
 
       console.error('Error:', error);
+      alert('No se pudo crear el producto. Verifica los datos ingresados.');
 
     }
   };
