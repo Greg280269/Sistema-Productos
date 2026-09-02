@@ -3,7 +3,8 @@ import jwt from 'jsonwebtoken';
 import { buscarUsuarioPorEmail, crearUsuario } from '../services/authService.js';
 
 const COOKIE = 'sesion';
-const opcionesCookie = { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 1000 * 60 * 60 * 8 };
+const esProduccion = process.env.NODE_ENV === 'production';
+const opcionesCookie = { httpOnly: true, sameSite: esProduccion ? 'none' : 'lax', secure: esProduccion, maxAge: 1000 * 60 * 60 * 8 };
 const usuarioPublico = ({ id, nombre, email, rol }) => ({ id, nombre, email, rol });
 const emitirSesion = (res, usuario) => {
   if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET no está configurado');

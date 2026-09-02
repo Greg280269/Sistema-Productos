@@ -1,0 +1,5 @@
+function AdminNav({ seccion, onCambiar }) {
+  const opciones = [{ id: 'productos', icono: '▦', titulo: 'Productos', detalle: 'Inventario y propietarios' }, { id: 'usuarios', icono: '♙', titulo: 'Usuarios', detalle: 'Roles y contraseñas' }];
+  return <nav aria-label="Secciones de administración" class="mb-7 grid gap-3 sm:grid-cols-2">{opciones.map((opcion) => <button key={opcion.id} type="button" onClick={() => onCambiar(opcion.id)} class={`flex items-center gap-4 rounded-2xl border p-4 text-left transition ${seccion === opcion.id ? 'border-indigo-500 bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'border-slate-200 bg-white text-slate-700 hover:border-indigo-200 hover:shadow-md'}`}><span class={`flex size-11 items-center justify-center rounded-xl text-xl ${seccion === opcion.id ? 'bg-white/15' : 'bg-indigo-50 text-indigo-600'}`}>{opcion.icono}</span><span><strong class="block">{opcion.titulo}</strong><small class={seccion === opcion.id ? 'text-indigo-100' : 'text-slate-500'}>{opcion.detalle}</small></span></button>)}</nav>;
+}
+export default AdminNav;

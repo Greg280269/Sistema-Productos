@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api/productos';
+import { API_URL } from '../config/api.js';
 
 const solicitar = async (url, opciones) => {
   const respuesta = await fetch(url, { ...opciones, credentials: 'include' });

@@ -67,4 +67,23 @@ Ejemplo de cuerpo para crear o actualizar:
   "nombre": "Teclado mecánico",
   "precio": 189.90
 }
+
+## Preparación para V1
+
+Puedes desplegar el frontend como sitio estático y el backend como servicio Node. Configura estas variables en el proveedor del backend:
+
+```env
+DB_HOST=host-de-tu-postgres
+DB_PORT=5432
+DB_NAME=project1
+DB_USER=usuario-de-produccion
+DB_PASSWORD=clave-de-produccion
+DB_SSL=true
+JWT_SECRET=una-clave-aleatoria-larga
+FRONTEND_URL=https://tu-frontend.example.com
+```
+
+Usa `npm install` como instalación y `npm start` como comando de inicio en `Backend`. Para `Frontend`, usa `npm run build` y publica la carpeta `dist`; define `VITE_API_URL` con la URL pública del backend, por ejemplo `https://tu-backend.example.com/api/productos`.
+
+Comprueba el despliegue visitando `https://tu-backend.example.com/health`, que debe responder `{ "estado": "ok" }`.
 ```
